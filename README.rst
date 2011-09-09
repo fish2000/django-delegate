@@ -1,4 +1,3 @@
-
 ===============
 django-delegate
 ===============
@@ -26,6 +25,8 @@ specifying the queryset. ET VIOLA. Like so:
 
 ::
 
+    from delegate import DelegateManager, delegate
+    
     class CustomQuerySet(models.query.QuerySet):
     
         @delegate
@@ -42,15 +43,17 @@ specifying the queryset. ET VIOLA. Like so:
         objects = CustomManager()
     
     
-    # will work:
+    # this will work:
     SomeModel.objects.qs_method('yo dogg')
-    # will also work:
+    # this will also work:
     SomeModel.objects.qs_method('yo dogg').qs_method('i heard you like queryset method delegation')
 
 To delegate all of the methods in a QuerySet automatically, you can create a subclass
 of DelegateQuerySet. These two QuerySet subclasses work identically:
 
 ::
+
+    from delegate import DelegateQuerySet, delegate
 
     class ManualDelegator(models.query.QuerySet):
         @delegate
@@ -67,6 +70,8 @@ delegate all the methods in a class without disrupting its inheritance chain. Th
 works identically to the previous two:
 
 ::
+
+    from delegate import delegate
 
     @delegate
     class CustomQuerySet(models.query.QuerySet):
