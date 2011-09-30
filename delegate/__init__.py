@@ -73,13 +73,14 @@ class DelegateSupervisor(type):
     """
     def __new__(cls, name, bases, attrs):
         
+        from django.db.models.query import QuerySet
         qs_delegates = dict()
         
         if '__queryset__' in attrs:
             
             qs = attrs.get('__queryset__', None)
             
-            if issubclass(qs, models.query.QuerySet):
+            if issubclass(qs, QuerySet):
                 qs_funcs = dict(filter(lambda attr: type(attr[1]) in (types.FunctionType, types.MethodType), qs.__dict__.items()))
                 
                 deleg = 0
@@ -121,6 +122,22 @@ class DelegateManager(models.Manager):
         if callable(qs):
             return qs(self.model, self.__managerfields__)
         return None
+    
+    # Defining these next three functions ensure that delegated
+    # queryset functions that operate on sliced querysets --
+    # e.g. 'return self[:10]' and suchlike -- will act as they
+    # should if they're called on the manager instance.
+    # ... as a bonus, you can also use them directly yourself --
+    # e.g. 'MyModel.objects[0:10:2]', et cetera.
+    
+    def __getitem__(self, idx):
+        return self.get_query_set().__getitem__(idx)
+    
+    def __setitem__(self, idx, val):
+        return self.get_query_set().__setitem__(idx, val)
+    
+    def __delitem__(self, idx):
+        return self.get_query_set().__delitem__(idx)
 
 
 class DelegateQuerySet(models.query.QuerySet):
@@ -145,6 +162,8 @@ class DelegateQuerySet(models.query.QuerySet):
 
 
 """
+
+
 *************************** WARNING -- HIGHLY EXPERIMENTAL -- FOR THE TRULY LAZY ***************************
 
 @micromanage -- get it? 'micromanage'? -- will cut out even more boilerplate from your manager definitions.
@@ -207,7 +226,8 @@ as the thing is already pushing it w/r/t complexity, I think.
 
 def undergo_management_training(queryset=None, progenitor=None):
     """
-    I believe this function is an example of a 'factory', as per the employ of many Java afficionatos.
+    I believe this function is an example of a 'factory', as per the lexographical usage
+    of many Java and C# programming afficionatos.
     
     """
     if not progenitor:
