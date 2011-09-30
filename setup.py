@@ -3,7 +3,7 @@ from distutils.core import setup
 
 setup(
     name='django-delegate',
-    version='0.1.0',
+    version='0.1.5',
     description='Automatic delegate methods for Django managers and querysets without runtime dispatch penalties.',
     author='Alexander Bohn',
     author_email='fish2000@gmail.com',
@@ -16,6 +16,9 @@ setup(
         'delegate',
         'queryset',
         'manager',
+        'method',
+        'dispatch',
+        'syntax-sugar',
     ],
     packages=[
         'delegate',
