@@ -1,13 +1,18 @@
 #/usr/bin/env python
-from distutils.core import setup
+try:
+    from setuptools import setup
+except ImportError:
+    from distutils.core import setup
+
+import delegate
 
 setup(
     name='django-delegate',
-    version='0.1.6',
+    version='%s.%s.%s' % delegate.__version__,
     description='Automatic delegate methods for Django managers and querysets without runtime dispatch penalties.',
-    author='Alexander Bohn',
+    author=delegate.__author__,
     author_email='fish2000@gmail.com',
-    maintainer='Alexander Bohn',
+    maintainer=delegate.__author__,
     maintainer_email='fish2000@gmail.com',
     license='BSD',
     url='http://github.com/fish2000/django-delegate/',
