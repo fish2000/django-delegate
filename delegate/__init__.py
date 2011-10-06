@@ -8,7 +8,7 @@ Copyright (c) 2011 Objects in Space and Time. All rights reserved.
 
 """
 __author__ = 'Alexander Bohn'
-__version__ = (0, 1, 5)
+__version__ = (0, 1, 6)
 
 import types
 from django.db import models
@@ -225,7 +225,8 @@ def undergo_management_training(queryset=None, progenitor=None):
     
     """
     if not progenitor:
-        progenitor = models.Manager
+        from django.db.models import Manager
+        progenitor = Manager
     
     if queryset and hasattr(progenitor, '__class__'):
         
@@ -254,9 +255,10 @@ class micromanage(object):
     cls_name_suffixes = ('QuerySet', 'Queryset', 'queryset')
     
     def __init__(self, *args, **kwargs):
+        from django.db.models import Manager
         self.clsname = kwargs.pop('name', None)
         self.target_model = kwargs.pop('model', None)
-        self.subclass = kwargs.pop('subclass', models.Manager)
+        self.subclass = kwargs.pop('subclass', Manager)
         super(micromanage, self).__init__(*args, **kwargs)
         
         if not self.clsname:
@@ -264,11 +266,13 @@ class micromanage(object):
                 self.clsname = "%sMgr" % self.target_model.__name__
     
     def __call__(self, qs):
-        if issubclass(self.target_model, models.Model):
+        from django.db.models import Model, Manager
+        from django.db.models.query import QuerySet
+        if issubclass(self.target_model, Model):
             theoldboss = getattr(self.target_model, 'objects', None)
             if theoldboss:
                 # subclass the existant manager if one wasn't specified
-                if self.subclass == models.Manager and issubclass(theoldboss.__class__, models.Manager):
+                if self.subclass == Manager and issubclass(theoldboss.__class__, Manager):
                     self.subclass = theoldboss # literally, same as the new one
         
         # crank out the new manager
@@ -289,7 +293,7 @@ class micromanage(object):
         
         # delegate all methods. (currently we delegate everything, ignoring
         # the method status as it is set per the @delegate decorator, which may change)
-        if issubclass(qs, models.query.QuerySet):
+        if issubclass(qs, QuerySet):
             #qs_delegates = dict()
             qs_funcs = dict(filter(lambda attr: type(attr[1]) in consumable_types, qs.__dict__.items()))
             for f_name, f in qs_funcs.items():
@@ -297,7 +301,7 @@ class micromanage(object):
         
         # if a target_model was specified, add an instance of the new queryset class
         # TODO: do something useful with the class in the absence of a target_model setting
-        if issubclass(self.target_model, models.Model):
+        if issubclass(self.target_model, Model):
             qs.model = self.target_model
             self.target_model.add_to_class('objects', newmgr())
             self.target_model._default_manager = self.target_model.objects
