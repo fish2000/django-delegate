@@ -13,12 +13,12 @@ __version__ = (0, 1, 5)
 import types
 from django.db import models
 
-comsumable_types = (
+consumable_types = (
     types.FunctionType,
     types.MethodType,
 )
 
-delegateable_types = comsumable_types + (
+delegateable_types = consumable_types + (
     types.ClassType,
     types.TypeType,
 )
@@ -52,7 +52,7 @@ def delegate(f_or_cls):
         f_or_cls.__delegate__ = 1
         
         if hasattr(f_or_cls, '__dict__'):
-            cls_funcs = filter(lambda attr: type(attr) in comsumable_types, f_or_cls.__dict__.values())
+            cls_funcs = filter(lambda attr: type(attr) in consumable_types, f_or_cls.__dict__.values())
             for cls_func in cls_funcs:
                 cls_func.__delegate__ = 1
     
@@ -81,7 +81,7 @@ class DelegateSupervisor(type):
             qs = attrs.get('__queryset__', None)
             
             if issubclass(qs, QuerySet):
-                qs_funcs = dict(filter(lambda attr: type(attr[1]) in (types.FunctionType, types.MethodType), qs.__dict__.items()))
+                qs_funcs = dict(filter(lambda attr: type(attr[1]) in (delegateable_types), qs.__dict__.items()))
                 
                 deleg = 0
                 
@@ -159,11 +159,7 @@ class DelegateQuerySet(models.query.QuerySet):
     pass
 
 
-
-
 """
-
-
 *************************** WARNING -- HIGHLY EXPERIMENTAL -- FOR THE TRULY LAZY ***************************
 
 @micromanage -- get it? 'micromanage'? -- will cut out even more boilerplate from your manager definitions.
@@ -222,8 +218,6 @@ in the future I may make it work by naming the class with a string instead, but 
 as the thing is already pushing it w/r/t complexity, I think.
 
 """
-
-
 def undergo_management_training(queryset=None, progenitor=None):
     """
     I believe this function is an example of a 'factory', as per the lexographical usage
@@ -236,23 +230,24 @@ def undergo_management_training(queryset=None, progenitor=None):
     if queryset and hasattr(progenitor, '__class__'):
         
         # define the micromanager
-        class MicroManager(progenitor.__class__):
-            use_for_related_fields = True
-            
-            __queryset__ = queryset
-            
-            def __init__(smelf, fields=None, *args, **kwargs):
-                super(MicroManager, smelf).__init__(*args, **kwargs)
-                smelf.__managerfields__ = fields
-            
-            def get_query_set(smelf):
-                queset = getattr(smelf, '__queryset__', None)
-                if callable(queset):
-                    return queset(smelf.model, smelf.__managerfields__)
-                return None
+        def __init__(smelf, fields=None, *args, **kwargs):
+            super(smelf.__class__, smelf).__init__(*args, **kwargs)
+            smelf.__managerfields__ = fields
+        
+        def get_query_set(smelf):
+            queset = getattr(smelf, '__queryset__', None)
+            if callable(queset):
+                return queset(smelf.model, smelf.__managerfields__)
+            return smelf.all()
+        
+        attrs = {}
+        attrs['use_for_related_fields'] = True
+        attrs['get_query_set'] = get_query_set
+        attrs['__queryset__'] = queryset
+        attrs['__init__'] = __init__
             
         # return it
-        return MicroManager
+        return type('MicroManager', (progenitor.__class__,), attrs)
 
 class micromanage(object):
     
@@ -272,7 +267,7 @@ class micromanage(object):
         if issubclass(self.target_model, models.Model):
             theoldboss = getattr(self.target_model, 'objects', None)
             if theoldboss:
-                # subclass existant manager if one wasn't specified
+                # subclass the existant manager if one wasn't specified
                 if self.subclass == models.Manager and issubclass(theoldboss.__class__, models.Manager):
                     self.subclass = theoldboss # literally, same as the new one
         
@@ -288,20 +283,19 @@ class micromanage(object):
                     break
         
         if not self.clsname: # if *still* not self.clsname
-            self.clsname = self.clsname = "%sMgr" % qs.__name__
+            self.clsname = "%sMgr" % qs.__name__
         
         newmgr.__name__ = self.clsname
         
-        # delegate all methods. (currently we delegate everything, ignoring status
-        # as it is set per the @delegate decorator... that may change)
+        # delegate all methods. (currently we delegate everything, ignoring
+        # the method status as it is set per the @delegate decorator, which may change)
         if issubclass(qs, models.query.QuerySet):
             #qs_delegates = dict()
-            qs_funcs = dict(filter(lambda attr: type(attr[1]) in comsumable_types, qs.__dict__.items()))
+            qs_funcs = dict(filter(lambda attr: type(attr[1]) in consumable_types, qs.__dict__.items()))
             for f_name, f in qs_funcs.items():
                 setattr(newmgr, f_name, f)
         
-        # if a target_model was specified,
-        # add an instance of the new queryset class
+        # if a target_model was specified, add an instance of the new queryset class
         # TODO: do something useful with the class in the absence of a target_model setting
         if issubclass(self.target_model, models.Model):
             qs.model = self.target_model
