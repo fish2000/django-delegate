@@ -231,24 +231,20 @@ def undergo_management_training(queryset=None, progenitor=None):
     if queryset and hasattr(progenitor, '__class__'):
         
         # define the micromanager
-        def __init__(smelf, fields=None, *args, **kwargs):
-            super(smelf.__class__, smelf).__init__(*args, **kwargs)
-            smelf.__managerfields__ = fields
+        class MicroManager(progenitor.__class__):
+            __queryset__ = queryset
+            use_for_related_fields = True
+            def __init__(smelf, fields=None, *args, **kwargs):
+                super(MicroManager, smelf).__init__(*args, **kwargs)
+                smelf.__managerfields__ = fields
+            def get_query_set(smelf):
+                queset = getattr(smelf, '__queryset__', None)
+                if callable(queset):
+                    return queset(smelf.model, smelf.__managerfields__)
+                return smelf.all()
         
-        def get_query_set(smelf):
-            queset = getattr(smelf, '__queryset__', None)
-            if callable(queset):
-                return queset(smelf.model, smelf.__managerfields__)
-            return smelf.all()
-        
-        attrs = {}
-        attrs['use_for_related_fields'] = True
-        attrs['get_query_set'] = get_query_set
-        attrs['__queryset__'] = queryset
-        attrs['__init__'] = __init__
-            
         # return it
-        return type('MicroManager', (progenitor.__class__,), attrs)
+        return MicroManager
 
 class micromanage(object):
     
