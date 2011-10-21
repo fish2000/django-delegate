@@ -8,7 +8,7 @@ Copyright (c) 2011 Objects in Space and Time. All rights reserved.
 
 """
 __author__ = 'Alexander Bohn'
-__version__ = (0, 1, 8)
+__version__ = (0, 2, 0)
 
 import types
 from django.db import models
