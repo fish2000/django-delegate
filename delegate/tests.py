@@ -83,7 +83,8 @@ class DelegateTests(TestCase):
         self.assertEqual(
             TestModel.other_objects.queryinyourquery().count(),
             TestModel.other_objects.all().queryinyourquery().count())
-        
+    
+    def test_manual_delegate_querysets(self):
         comparator = [repr(q) for q in TestModel.other_objects.all().queryinyourquery()]
         self.assertQuerysetEqual(
             TestModel.other_objects.queryinyourquery(),
@@ -101,7 +102,8 @@ class DelegateTests(TestCase):
         self.assertEqual(
             TestModel.objects.iheardyoulike('yo dogg').count(),
             TestModel.objects.all().iheardyoulike('yo dogg').count())
-        
+    
+    def test_automatic_delegate_querysets(self):
         comparator = [repr(q) for q in TestModel.objects.all().yodogg()]
         self.assertQuerysetEqual(
             TestModel.objects.yodogg(),
@@ -123,7 +125,8 @@ class DelegateTests(TestCase):
         self.assertEqual(
             TestMicroManagerModel.objects.yodogg().count(),
             TestMicroManagerModel.objects.all().yodogg().count())
-        
+    
+    def test_EXPERIMENTAL_micromanager_querysets(self):
         comparator = [repr(q) for q in TestMicroManagerModel.objects.all().yodogg()]
         self.assertQuerysetEqual(
             TestMicroManagerModel.objects.yodogg(),
