@@ -1,5 +1,43 @@
 #!/usr/bin/env python
 # encoding: utf-8
+"""
+
+Execute this file to run the tests. The output should look like this:
+
+    Creating test database for alias 'default' ('/var/folders/5h/k46wfdmx35s3dx5rb83490540000gn/T/tmpwiMrdU/delegate-test.db')...
+    Destroying old test database 'default'...
+    Creating tables ...
+    Creating table auth_permission
+    Creating table auth_group_permissions
+    Creating table auth_group
+    Creating table auth_user_user_permissions
+    Creating table auth_user_groups
+    Creating table auth_user
+    Creating table django_content_type
+    Creating table django_session
+    Creating table django_site
+    Creating table django_admin_log
+    Creating table delegate_testmodel
+    Creating table delegate_testmicromanagermodel
+    Installing custom SQL ...
+    Installing indexes ...
+    No fixtures found.
+    test_EXPERIMENTAL_micromanager (delegate.tests.DelegateTests) ... ok
+    test_EXPERIMENTAL_micromanager_querysets (delegate.tests.DelegateTests) ... ok
+    test_automatic_delegate (delegate.tests.DelegateTests) ... ok
+    test_automatic_delegate_querysets (delegate.tests.DelegateTests) ... ok
+    test_manual_delegate (delegate.tests.DelegateTests) ... ok
+    test_manual_delegate_querysets (delegate.tests.DelegateTests) ... ok
+    test_slice_syntax (delegate.tests.DelegateTests) ... ok
+    Destroying test database for alias 'default' ('/var/folders/5h/k46wfdmx35s3dx5rb83490540000gn/T/tmpwiMrdU/delegate-test.db')...
+    Deleting test data: /var/folders/5h/k46wfdmx35s3dx5rb83490540000gn/T/tmpwiMrdU
+    
+    ----------------------------------------------------------------------
+    Ran 7 tests in 0.044s
+    
+    OK
+
+"""
 
 import settings as delegate_settings
 from django.conf import settings
@@ -13,7 +51,8 @@ from delegate import DelegateManager, DelegateQuerySet, delegate, micromanage
 if __name__ == "__main__":
     from django.core.management import call_command
     call_command('test', 'delegate',
-        interactive=False, traceback=True, verbosity=2, settings='delegate.settings')
+        settings='delegate.settings',
+        interactive=False, traceback=True, verbosity=2)
     import shutil, sys
     tempdata = delegate_settings.tempdata
     print "Deleting test data: %s" % tempdata
