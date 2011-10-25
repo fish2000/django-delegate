@@ -29,15 +29,18 @@ setup(
         'delegate',
     ],
     classifiers=[
-        'Development Status :: 3 - Alpha',
+        'Development Status :: 5 - Production/Stable',
         'Environment :: Web Environment',
+        'Environment :: Other Environment',
+        'Environment :: Plugins',
         'Framework :: Django',
         'Intended Audience :: Developers',
         'License :: OSI Approved :: BSD License',
         'Operating System :: OS Independent',
         'Programming Language :: Python :: 2.6',
         'Programming Language :: Python :: 2.7',
-        'Topic :: Utilities'
+        'Topic :: Database',
+        'Topic :: Utilities',
     ]
 )
 

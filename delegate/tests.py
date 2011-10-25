@@ -1,5 +1,7 @@
+#!/usr/bin/env python
+# encoding: utf-8
 
-from delegate import settings as delegate_settings
+import settings as delegate_settings
 from django.conf import settings
 if not settings.configured:
     settings.configure(**delegate_settings.__dict__)
@@ -11,7 +13,7 @@ from delegate import DelegateManager, DelegateQuerySet, delegate, micromanage
 if __name__ == "__main__":
     from django.core.management import call_command
     call_command('test', 'delegate',
-        interactive=False, traceback=True, verbosity=2)
+        interactive=False, traceback=True, verbosity=2, settings='delegate.settings')
     import shutil, sys
     tempdata = delegate_settings.tempdata
     print "Deleting test data: %s" % tempdata
