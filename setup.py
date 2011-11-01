@@ -4,7 +4,7 @@ try:
 except ImportError:
     from distutils.core import setup
 
-from delegate import __version__ as version
+import __version__ as version
 
 setup(
     name='django-delegate',

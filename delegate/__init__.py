@@ -7,7 +7,6 @@ Created by Alexander Bohn on 2011-02-08.
 Copyright (c) 2011 Objects in Space and Time. All rights reserved.
 
 """
-from delegate import __version__ as version
 
 import types
 from django.db import models
