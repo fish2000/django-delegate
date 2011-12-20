@@ -8,4 +8,4 @@ Copyright (c) 2011 Objects in Space and Time. All rights reserved.
 
 """
 __author__ = 'Alexander Bohn'
-__version__ = (0, 2, 5)
+__version__ = (0, 2, 6)
