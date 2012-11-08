@@ -118,7 +118,7 @@ class DelegateManager(models.Manager):
     def get_query_set(self):
         qs = getattr(self, '__queryset__', None)
         if callable(qs):
-            return qs(self.model, self.__managerfields__)
+            return qs(self.model, self.__managerfields__, using=self._db)
         return None
     
     # Defining these next three functions ensure that delegated
