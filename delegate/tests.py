@@ -1,41 +1,40 @@
 #!/usr/bin/env python
 # encoding: utf-8
 """
-
 Execute this file to run the tests. The output should look like this:
 
-    Creating test database for alias 'default' ('/var/folders/5h/k46wfdmx35s3dx5rb83490540000gn/T/tmpwiMrdU/delegate-test.db')...
-    Destroying old test database 'default'...
-    Creating tables ...
-    Creating table auth_permission
-    Creating table auth_group_permissions
-    Creating table auth_group
-    Creating table auth_user_user_permissions
-    Creating table auth_user_groups
-    Creating table auth_user
-    Creating table django_content_type
-    Creating table django_session
-    Creating table django_site
-    Creating table django_admin_log
-    Creating table delegate_testmodel
-    Creating table delegate_testmicromanagermodel
-    Installing custom SQL ...
-    Installing indexes ...
-    No fixtures found.
-    test_EXPERIMENTAL_micromanager (delegate.tests.DelegateTests) ... ok
-    test_EXPERIMENTAL_micromanager_querysets (delegate.tests.DelegateTests) ... ok
-    test_automatic_delegate (delegate.tests.DelegateTests) ... ok
-    test_automatic_delegate_querysets (delegate.tests.DelegateTests) ... ok
-    test_manual_delegate (delegate.tests.DelegateTests) ... ok
-    test_manual_delegate_querysets (delegate.tests.DelegateTests) ... ok
-    test_slice_syntax (delegate.tests.DelegateTests) ... ok
-    Destroying test database for alias 'default' ('/var/folders/5h/k46wfdmx35s3dx5rb83490540000gn/T/tmpwiMrdU/delegate-test.db')...
-    Deleting test data: /var/folders/5h/k46wfdmx35s3dx5rb83490540000gn/T/tmpwiMrdU
+Creating test database for alias 'default' ('/tmp/delegate-test.db')...
+Destroying old test database 'default'...
+Creating tables ...
+Creating table auth_permission
+Creating table auth_group_permissions
+Creating table auth_group
+Creating table auth_user_user_permissions
+Creating table auth_user_groups
+Creating table auth_user
+Creating table django_content_type
+Creating table django_session
+Creating table django_site
+Creating table django_admin_log
+Creating table delegate_testmodel
+Creating table delegate_testmicromanagermodel
+Installing custom SQL ...
+Installing indexes ...
+No fixtures found.
+test_EXPERIMENTAL_micromanager (delegate.tests.DelegateTests) ... ok
+test_EXPERIMENTAL_micromanager_querysets (delegate.tests.DelegateTests) ... ok
+test_automatic_delegate (delegate.tests.DelegateTests) ... ok
+test_automatic_delegate_querysets (delegate.tests.DelegateTests) ... ok
+test_manual_delegate (delegate.tests.DelegateTests) ... ok
+test_manual_delegate_querysets (delegate.tests.DelegateTests) ... ok
+test_slice_syntax (delegate.tests.DelegateTests) ... ok
+Destroying test database for alias 'default' ('/tmp/delegate-test.db')...
+Deleting test data: /tmp
     
-    ----------------------------------------------------------------------
-    Ran 7 tests in 0.044s
+----------------------------------------------------------------------
+Ran 7 tests in 0.044s
     
-    OK
+OK
 
 """
 
@@ -124,7 +123,8 @@ class DelegateTests(TestCase):
             TestModel.other_objects.all().queryinyourquery().count())
     
     def test_manual_delegate_querysets(self):
-        comparator = [repr(q) for q in TestModel.other_objects.all().queryinyourquery()]
+        comparator = [repr(q) for q \
+             in TestModel.other_objects.all().queryinyourquery()]
         self.assertQuerysetEqual(
             TestModel.other_objects.queryinyourquery(),
             comparator)
@@ -143,7 +143,8 @@ class DelegateTests(TestCase):
             TestModel.objects.all().iheardyoulike('yo dogg').count())
     
     def test_automatic_delegate_querysets(self):
-        comparator = [repr(q) for q in TestModel.objects.all().yodogg()]
+        comparator = [repr(q) for q \
+             in TestModel.objects.all().yodogg()]
         self.assertQuerysetEqual(
             TestModel.objects.yodogg(),
             comparator)
@@ -166,7 +167,8 @@ class DelegateTests(TestCase):
             TestMicroManagerModel.objects.all().yodogg().count())
     
     def test_EXPERIMENTAL_micromanager_querysets(self):
-        comparator = [repr(q) for q in TestMicroManagerModel.objects.all().yodogg()]
+        comparator = [repr(q) for q \
+             in TestMicroManagerModel.objects.all().yodogg()]
         self.assertQuerysetEqual(
             TestMicroManagerModel.objects.yodogg(),
             comparator)

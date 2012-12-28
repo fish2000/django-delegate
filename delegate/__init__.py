@@ -23,7 +23,8 @@ delegateable_types = consumable_types + (
 
 def delegate(f_or_cls):
     """
-    # Delegate QuerySet methods to a DelegateManager subclass by decorating them thusly:
+    # Delegate QuerySet methods to a DelegateManager subclass,
+    # by decorating them thusly:
     
     class CustomQuerySet(models.query.QuerySet):
         
@@ -33,7 +34,8 @@ def delegate(f_or_cls):
         
         # ... 
     
-    # You can also decorate classes -- this will delegate all of the classes' methods:
+    # You can also decorate classes.
+    # This will delegate all of the classes' methods:
     
     @delegate
     class CustomQuerySet(models.query.QuerySet):
@@ -50,7 +52,9 @@ def delegate(f_or_cls):
         f_or_cls.__delegate__ = 1
         
         if hasattr(f_or_cls, '__dict__'):
-            cls_funcs = filter(lambda attr: type(attr) in consumable_types, f_or_cls.__dict__.values())
+            cls_funcs = filter(
+                lambda attr: type(attr) in consumable_types,
+                    f_or_cls.__dict__.values())
             for cls_func in cls_funcs:
                 cls_func.__delegate__ = 1
     
@@ -79,7 +83,9 @@ class DelegateSupervisor(type):
             qs = attrs.get('__queryset__', None)
             
             if issubclass(qs, QuerySet):
-                qs_funcs = dict(filter(lambda attr: type(attr[1]) in (delegateable_types), qs.__dict__.items()))
+                qs_funcs = dict(filter(
+                    lambda attr: type(attr[1]) in (delegateable_types),
+                        qs.__dict__.items()))
                 
                 deleg = 0
                 
@@ -91,15 +97,18 @@ class DelegateSupervisor(type):
                         deleg += 1
                         qs_delegates[f_name] = f
                 
-                #print "Delegating %s funcs to %s from %s" % (deleg, name, qs.__name__)
+                #print "Delegating %s funcs to %s from %s" % (
+                #   deleg, name, qs.__name__)
         
         attrs.update(qs_delegates)
-        return super(DelegateSupervisor, cls).__new__(cls, name, bases, attrs)
+        return super(DelegateSupervisor, cls).__new__(
+            cls, name, bases, attrs)
 
 
 class DelegateManager(models.Manager):
     """
-    # Subclass DelegateManager and specify the queryset from which to delegate:
+    # Subclass DelegateManager,
+    # and specify the queryset from which to delegate:
     
     class CustomManager(DelegateManager):
         __queryset__ = CustomQuerySet
@@ -158,11 +167,12 @@ class DelegateQuerySet(models.query.QuerySet):
 
 
 """
-*************************** WARNING -- HIGHLY EXPERIMENTAL -- FOR THE TRULY LAZY ***************************
+*********** WARNING -- HIGHLY EXPERIMENTAL -- FOR THE TRULY LAZY ***********
 
-@micromanage -- get it? 'micromanage'? -- will cut out even more boilerplate from your manager definitions.
-The following class decorator @micromanage will set everything up for you, as per the above delegation
-apparatus, in one fell swoop. You do this:
+@micromanage -- get it? 'micromanage'? -- will cut out even more boilerplate
+from your manager definitions. The following class decorator @micromanage
+will set everything up for you, as per the above delegation apparatus, in
+one fell swoop. You do this:
 
 
 @micromanage(model=MyModel)
@@ -196,30 +206,36 @@ class MyModel(models.Model):
     # ...
 
 
-This minimizes boilerplate -- you're defining the manager AND queryset AND plugging the manager
-into the model in one fell swoop. @micromanage creates a manager automatically, based on your
-queryset. If you already have a manager defined on your target model (with "objects = SomeManager()"),
-@micromanage will subclass the manager you've chosen, to keep your refactoring to a minimum.
-It can also subclass an arbitrary manager class you specify in the decorator kwargs -- see
-the micromanage.__init__() method and the undergo_management_training() function below.
+This minimizes boilerplate -- you're defining the manager AND queryset,
+AND plugging the manager into the model in one fell swoop. @micromanage
+creates a manager automatically, based on your queryset. If you already
+have a manager defined on your target model (with "objects = SomeManager()"),
+@micromanage will subclass the manager you've chosen, to keep your
+refactoring to a minimum. It can also subclass an arbitrary manager class
+you specify in the decorator kwargs -- see the micromanage.__init__() method
+and the undergo_management_training() function below.
 
-HOWEVER: the implementation is meta enough that it may very well break your existing shit.
+HOWEVER: the implementation is meta enough that it may very well break your
+existing shit.
 
-So DO NOT USE IT ANYWHERE NEAR PRODUCTION. Do not use it with existing codebases **IN GENERAL** and 
-expect everything to come up roses, unless you have the most anal-retentive test suite around
-and/or you enjoy debugging tracebacks with "Error when calling the metaclass bases" in them (google
-it if you're curious). YOU HAVE BEEN WARNED. PROCEED PAST THIS POINT AT YOUR OWN RISK.
+So DO NOT USE IT ANYWHERE NEAR PRODUCTION. Do not use it with existing
+codebases **IN GENERAL** and expect everything to come up roses, unless you
+have the most anal-retentive test suite around and/or you enjoy debugging
+tracebacks with "Error when calling the metaclass bases" in them (google it
+if you're curious). YOU HAVE BEEN WARNED. PROCEED PAST THIS POINT AT YOUR
+OWN RISK.
 
-At the moment, one limitation is: you have to define @micromanaged QuerySet subclasses AFTER you
-define the model, because you need to pass the model class itself into the decorator kwargs;
-in the future I may make it work by naming the class with a string instead, but maybe not,
-as the thing is already pushing it w/r/t complexity, I think.
+At the moment, one limitation is: you have to define @micromanaged QuerySet
+subclasses AFTER you define the model, because you need to pass the model
+class itself into the decorator kwargs; in the future I may make it work by
+naming the class with a string instead, but maybe not, as the thing is
+already pushing it w/r/t complexity, I think.
 
 """
 def undergo_management_training(queryset=None, progenitor=None):
     """
-    I believe this function is an example of a 'factory', as per the lexographical usage
-    of many Java and C# programming afficionatos.
+    I believe this function is an example of a 'factory', as per the
+    lexographical usage of many Java and C# programming afficionatos.
     
     """
     if not progenitor:
@@ -266,8 +282,9 @@ class micromanage(object):
             theoldboss = getattr(self.target_model, 'objects', None)
             if theoldboss:
                 # subclass the existant manager if one wasn't specified
-                if self.subclass == Manager and issubclass(theoldboss.__class__, Manager):
-                    self.subclass = theoldboss # literally, same as the new one
+                if self.subclass == Manager and issubclass(
+                    theoldboss.__class__, Manager):
+                    self.subclass = theoldboss # same as the new one
         
         # crank out the new manager
         newmgr = undergo_management_training(qs, self.subclass)
@@ -285,16 +302,21 @@ class micromanage(object):
         
         newmgr.__name__ = self.clsname
         
-        # delegate all methods. (currently we delegate everything, ignoring
-        # the method status as it is set per the @delegate decorator, which may change)
+        # delegate all methods. (currently we delegate everything,
+        # ignoring the method status as it is set per the @delegate
+        # decorator, which may change)
         if issubclass(qs, QuerySet):
             #qs_delegates = dict()
-            qs_funcs = dict(filter(lambda attr: type(attr[1]) in consumable_types, qs.__dict__.items()))
+            qs_funcs = dict(filter(
+                lambda attr: type(attr[1]) in consumable_types,
+                    qs.__dict__.items()))
             for f_name, f in qs_funcs.items():
                 setattr(newmgr, f_name, f)
         
-        # if a target_model was specified, add an instance of the new queryset class
-        # TODO: do something useful with the class in the absence of a target_model setting
+        # if a target_model was specified, add an instance of the new
+        # queryset class
+        # TODO: do something useful with the class in the absence of
+        # a target_model setting
         if issubclass(self.target_model, Model):
             qs.model = self.target_model
             self.target_model.add_to_class('objects', newmgr())

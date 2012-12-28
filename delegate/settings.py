@@ -78,16 +78,26 @@ INSTALLED_APPS = (
 )
 
 # Logging Configuration
-import logging
 LOGGING = dict(
     version=1,
     disable_existing_loggers=False,
-    formatters={ 'standard': { 'format': '%(asctime)s [%(levelname)s] %(name)s: %(message)s' }, },
+    formatters={
+        'standard': {
+            'format':
+                '%(asctime)s [%(levelname)s] %(name)s: %(message)s' }, },
     handlers={
-        'default': { 'level':'DEBUG', 'class':'logging.StreamHandler', 'formatter':'standard' },
-        'nil': { 'level':'DEBUG', 'class':'django.utils.log.NullHandler', },
+        'default': {
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter':'standard' },
+        'nil': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler', },
     },
     loggers={
-        'delegate': { 'handlers': ['default'], 'level': 'DEBUG', 'propagate': False },
+        'delegate': { 
+            'handlers': ['default'], 
+            'level': 'DEBUG', 
+            'propagate': False },
     },
 )
