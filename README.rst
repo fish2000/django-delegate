@@ -1,3 +1,7 @@
+
+.. image:: https://travis-ci.org/fish2000/django-delegate.png?branch=master
+   :target: https://travis-ci.org/fish2000/django-delegate
+
 ===============
 django-delegate
 ===============
