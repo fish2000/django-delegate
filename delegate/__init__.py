@@ -65,7 +65,7 @@ def delegate(f_or_cls):
     return f_or_cls
 
 
-class DelegateSupervisor(type):
+class DelegateSupervisor(type(models.Manager)):
     """
     # The DelegateSupervisor metaclass handles delegation
     # of the specified methods from a QuerySet to a Manager
