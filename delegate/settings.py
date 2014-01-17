@@ -2,9 +2,7 @@
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-ADMINS = (
-    ('My Name', 'your_email@domain.com'),
-)
+ADMINS = ()
 MANAGERS = ADMINS
 
 import tempfile, os
@@ -63,7 +61,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     "django.contrib.auth.context_processors.auth",
     "django.core.context_processors.request",
     "django.core.context_processors.debug",
-    #"django.core.context_processors.i18n", this is AMERICA
     "django.core.context_processors.media",
 )
 

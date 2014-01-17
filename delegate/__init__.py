@@ -75,11 +75,10 @@ class DelegateSupervisor(type):
     """
     def __new__(cls, name, bases, attrs):
         
-        from django.db.models.query import QuerySet
-        qs_delegates = dict()
-        
         if '__queryset__' in attrs:
             
+            from django.db.models.query import QuerySet
+            qs_delegates = dict()
             qs = attrs.get('__queryset__', None)
             
             if issubclass(qs, QuerySet):
@@ -99,8 +98,9 @@ class DelegateSupervisor(type):
                 
                 #print "Delegating %s funcs to %s from %s" % (
                 #   deleg, name, qs.__name__)
+                
+                attrs.update(qs_delegates)
         
-        attrs.update(qs_delegates)
         return super(DelegateSupervisor, cls).__new__(
             cls, name, bases, attrs)
 
