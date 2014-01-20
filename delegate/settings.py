@@ -5,7 +5,7 @@ TEMPLATE_DEBUG = DEBUG
 ADMINS = ()
 MANAGERS = ADMINS
 
-import tempfile, os
+import tempfile, os, hashlib, datetime
 from django import contrib
 tempdata = tempfile.mkdtemp()
 approot = os.path.dirname(os.path.abspath(__file__))
@@ -30,6 +30,8 @@ MEDIA_URL = '/face/'
 STATIC_ROOT = os.path.join(tempdata, 'static', 'admin')[0]
 STATIC_URL = '/staticfiles/'
 ADMIN_MEDIA_PREFIX = '/admin-media/'
+SECRET_KEY = hashlib.sha1(
+    datetime.datetime.now().isoformat()).hexdigest()
 
 TEMPLATE_DIRS = (
     os.path.join(approot, 'templates'),
