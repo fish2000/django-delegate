@@ -83,3 +83,9 @@ works identically to the previous two:
         def qs_method(self, some_value):
             return self.filter(some_param__icontains=some_value)
 
+
+
+.. image:: https://d2weczhvl823v0.cloudfront.net/fish2000/django-delegate/trend.png
+   :alt: Bitdeli badge
+   :target: https://bitdeli.com/free
+
